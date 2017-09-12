@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/action_saved_items"
+        android:orderInCategory="1"
+        android:title="@string/Saved_Menu_item"
+        app:showAsAction="withText" />
+
+    <item
+        android:id="@+id/action_clear_local_database"
+        android:orderInCategory="1"
+        android:title="@string/Clear_Database_Menu_item"
+        app:showAsAction="withText" />
+
+    <item
+        android:id="@+id/action_location_information_screen"
+        android:orderInCategory="1"
+        android:title="@string/menu_action_location_overviews_screen"
+        app:showAsAction="withText" />
+
+    <item
+        android:id="@+id/action_gps_location_01"
+        android:orderInCategory="1"
+        android:title="@string/menu_action_GPS_location_01"
+        app:showAsAction="withText" />
+
+    <item
+        android:id="@+id/action_gps_location_02"
+        android:orderInCategory="1"
+        android:title="@string/menu_action_GPS_location_02"
+        app:showAsAction="withText" />
+
+    <item
+        android:id="@+id/action_gps_location_03"
+        android:orderInCategory="1"
+        android:title="@string/menu_action_GPS_location_03"
+        app:showAsAction="withText" />
+
+    <item
+        android:id="@+id/action_activate_imageView"
+        android:orderInCategory="1"
+        android:title="@string/menu_action_activate_image"
+        app:showAsAction="withText" />
+
+    <item
+        android:id="@+id/action_about_dialog"
+        android:orderInCategory="1"
+        android:title="@string/About_Menu_item"
+        app:showAsAction="withText" />
+</menu>

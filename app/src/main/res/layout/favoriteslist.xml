@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lLDetailsList"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/detail_view_default_padding">
+
+        <ImageView
+            android:id="@+id/imageStoredVictim"
+            android:layout_width="@dimen/detail_view_image_size"
+            android:layout_height="@dimen/detail_view_image_size"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/detail_view_image_margin_top"
+            android:contentDescription="@string/contentDescription_photo_of_the_victim" />
+
+        <TextView
+            android:id="@+id/textviewStoredVictimName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_view_default_padding"
+            android:layout_toEndOf="@id/imageStoredVictim"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/detail_view_headline_textSize"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textviewStoredVictimBornDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_view_default_padding"
+            android:layout_marginTop="@dimen/detail_view_victim_dates_margin_top"
+            android:layout_toEndOf="@id/imageStoredVictim"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/detail_view_default_textSize" />
+
+        <TextView
+            android:id="@+id/textviewStoredVictimDeathDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_view_default_padding"
+            android:layout_marginTop="@dimen/detail_view_victim_dates_margin_top"
+            android:layout_toEndOf="@id/textviewStoredVictimBornDate"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/detail_view_default_textSize" />
+
+        <TextView
+            android:id="@+id/textviewStoredVictimAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_view_default_padding"
+            android:layout_marginTop="@dimen/detail_view_victim_address_margin_top"
+            android:layout_toEndOf="@id/imageStoredVictim"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/detail_view_default_textSize" />
+
+        <TextView
+            android:id="@+id/textviewStoredVictimDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_view_default_padding"
+            android:layout_marginTop="@dimen/detail_view_victim_description"
+            android:layout_toEndOf="@id/imageStoredVictim"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/detail_view_default_textSize" />
+
+        <ImageView
+            android:id="@+id/wwwStoredImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_view_www_margin_start"
+            android:layout_marginTop="@dimen/detail_view_www_margin_top"
+            android:contentDescription="@string/contentDescription_WWW_icon"
+            android:src="@drawable/www" />
+
+    </RelativeLayout>
+
+    <!-- A separator line for each element -->
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginEnd="@dimen/detail_view_default_padding"
+        android:layout_marginStart="@dimen/detail_view_default_padding"
+        android:layout_marginTop="@dimen/detail_view_default_padding"
+        android:background="@color/colorAccent" />
+
+</LinearLayout>

@@ -1,0 +1,88 @@
+<resources>
+    <string name="app_name">StolperSteineAR</string>
+
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+
+    <!-- MainScreenActivity -->
+    <string name="Saved_Menu_item">Saved items </string>
+    <string name="Test_Menu_item">Test GPS coordinates</string>
+    <string name="About_Menu_item">About</string>
+    <string name="Clear_Database_Menu_item">Clear local database</string>
+    <string name="contentDescription_main_screen_logo">Stolpersteine Logo</string>
+    <string name="contentDescription_main_screen_app_name">StolpersteineAR Logo</string>
+    <string name="contentDescription_main_screen_texture">Camera view</string>
+
+    <string name="snackbar_no_internet_connection_error">No internet connection. </string>
+    <string name="snackbar_json_paring_error">JSON parsing problem. </string>
+    <string name="snackbar_url_error">URL related problem.</string>
+    <string name="snackbar_database_error">Common database error. </string>
+    <string name="snackbar_empty_local_database_success">The local database is now empty.</string>
+    <string name="snackbar_empty_local_database_failed">An error occurred the local database is still full.</string>
+
+    <string name="alertdailog_message">All local stored data will be removed.</string>
+    <string name="alertdailog_yes">Okay</string>
+    <string name="alertdailog_no">Cancel</string>
+    <string name="alertdailog_title">Remove local stored data</string>
+
+    <!-- About Dialog -->
+    <string name="about_dialog_title_first_slide">StolperSteineAR</string>
+    <string name="about_dialog_description_first_slide">for Cologne</string>
+    <string name="about_dialog_title_second_slide">Disclaimer</string>
+    <string name="about_dialog_description_second_slide">Please keep in mind all of the used data is
+    based on the data of the Openstreemap project! Maybe some Stolpersteine are missing or some
+    information are incorrect.</string>
+    <string name="about_infoslide_headline">Licence</string>
+    <string name="licenceslide_text"><![CDATA[For this project I used the following libraries and sources.For the position
+    of the "solpersteine" I used https://openstreetmaps.org/ and for getting the proper
+    JSON objects out of this map I used https://overpass-turbo.eu/ <p>For the whole HTTPS traffic issue I used
+    the OKHTTP3 https://github.com/square/okhttp/tree/master/okhttp/src/main/java/okhttp3. <p>For parsing the JSON
+    objects I used GSON https://github.com/google/gson. For creating the nice info slides
+    I used Android Material Intro Screen https://github.com/TangoAgency/material-intro-screen.<p>
+    For the GPS matching approach I used the blog of Krzysztof Jackowski
+    https://www.netguru.co/blog/augmented-reality-mobile-android For displaying the images I used
+    the Picasso library https://square.github.io/picasso/ and for getting ride of some line of
+    codes I am using the butterknife https://jakewharton.github.io/butterknife/<p>
+    The whole project is an open source project and you can get the source code at
+    https://github.com/bjoerngam/ If you have any kind of questions contact me via devel@bjoern.cologne]]></string>
+
+    <string name="no_location_detected">
+        No location detected. Make sure location is enabled on the device.
+    </string>
+
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+        functionality.</string>
+    <string name="settings">Settings</string>
+
+
+    <!---Camera related strings -->
+    <string name="camera_change">Camera change</string>
+
+    <!-- GPS related strings -->
+    <string name="no_gps_signal">No GPS signal!</string>
+    <string name="title_activity_details">DetailsActivity</string>
+
+    <!-- Detail view -->
+    <string name="contentDescription_photo_of_the_victim">Photo of the victim</string>
+    <string name="contentDescription_WWW_icon">Open the URL in a browser</string>
+    <string name="toolbar_details">Details</string>
+    <string name="toolbar_subtitle_details">of the victim(s)</string>
+    <string name="save_victim_entry_success">Save a entry into your local database</string>
+    <string name="save_victim_entry_failed">Failed to save a entry into your local database</string>
+    <string name="victim_is_already_saved">The Entry is already part of your local database</string>
+    <string name="detail_store_dataset">Store</string>
+
+    <!-- Widget Information -->
+    <string name="appwidget_text">StolperSteineAR</string>
+    <string name="add_widget">Add widget</string>
+
+    <!-- Fav view -->
+    <string name="fav_title_toolbar">Local stored data</string>
+    <string name="fav_subtitle">of the victims</string>
+
+    <!--StolperSteineAR widget -->
+    <string name="widget_empty_view">Currently no data.</string>
+    <string name="widget_headline">Local stored data</string>
+</resources>

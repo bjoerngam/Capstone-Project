@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- about_dialog dimensions -->
+    <dimen name="about_dialog_check_box_margin">32dp</dimen>
+    <dimen name="about_dialog_scrollview_margin">32dp</dimen>
+    <dimen name="about_dialog_scrollview_height">0dp</dimen>
+    <dimen name="about_dialog_padding_bottom">164dp</dimen>
+
+    <!-- stolpersteinear widget -->
+    <dimen name="widget_empty_textView">14sp</dimen>
+    <dimen name="widget_padding_top_listView">10dp</dimen>
+    <dimen name="widget_headline_text_size">16sp</dimen>
+    <dimen name="widget_headline_margin_top">10dp</dimen>
+
+    <!-- stolper_steine_arapp_widget -->
+    <dimen name="arapp_widget_layout_margin">8dp</dimen>
+    <dimen name="arapp_widget_margin">8dp</dimen>
+    <dimen name="arapp_widget_textSize">24sp</dimen>
+
+    <!-- list_item_widget -->
+    <dimen name="list_item_layout_margin_start">10dp</dimen>
+    <dimen name="list_item_textSize">18sp</dimen>
+
+    <!-- licence_dialog -->
+    <dimen name="licence_dialog_padding_top">18dp</dimen>
+    <dimen name="licence_textSize">18sp</dimen>
+    <dimen name="licence_dialog_padding_bottom">164dp</dimen>
+    <dimen name="licence_dialog_scrollview_margin">32dp</dimen>
+    <dimen name="licence_dialog_scrollview_height">0dp</dimen>
+
+    <!-- detail view -->
+    <dimen name="detail_view_default_padding">10dp</dimen>
+    <dimen name="detail_view_default_textSize">14sp</dimen>
+    <dimen name="detail_view_image_size">100dp</dimen>
+    <dimen name="detail_view_www_margin_top">175dp</dimen>
+    <dimen name="detail_view_www_margin_start">30dp</dimen>
+    <dimen name="detail_view_victim_description">90dp</dimen>
+    <dimen name="detail_view_victim_dates_margin_top">50dp</dimen>
+    <dimen name="detail_view_victim_address_margin_top">67dp</dimen>
+    <dimen name="detail_view_headline_textSize">18sp</dimen>
+    <dimen name="detail_view_image_margin_top">18dp</dimen>
+    <dimen name="detail_view_store_dataset_margin_start">280dp</dimen>
+    <dimen name="detail_view_store_dataset_margin_top">170dp</dimen>
+
+    <!-- mainscreen activity -->
+    <dimen name="mainscreen_margin_start">20dp</dimen>
+
+    <!--stolper_steine_arapp_widget_info -->
+    <dimen name="arapp_widget_size">250dp</dimen>
+</resources>

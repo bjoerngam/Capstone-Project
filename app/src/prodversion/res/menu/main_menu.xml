@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/action_saved_items"
+        android:title="@string/Saved_Menu_item"
+        android:orderInCategory="1"
+        app:showAsAction="withText"/>
+
+    <item
+        android:id="@+id/action_clear_local_database"
+        android:title="@string/Clear_Database_Menu_item"
+        android:orderInCategory="1"
+        app:showAsAction="withText"/>
+
+    <item
+        android:id="@+id/action_about_dialog"
+        android:title="@string/About_Menu_item"
+        android:orderInCategory="1"
+        app:showAsAction="withText"/>
+</menu>

@@ -1,0 +1,50 @@
+<RelativeLayout
+    android:id="@+id/rlMainScreen"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.stolpersteinear.MainScreenActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:background="@color/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/contentDescription_main_screen_logo"
+            android:src="@drawable/stolpersteine_toolbar"/>
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_marginStart="@dimen/mainscreen_margin_start"
+            android:layout_width="wrap_content"
+            android:layout_height= "wrap_content"
+            android:contentDescription="@string/contentDescription_main_screen_app_name"
+            android:src="@drawable/logo"/>
+
+    </android.support.v7.widget.Toolbar>
+
+    <TextureView
+            android:id="@+id/texture"
+            android:layout_below="@+id/toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/contentDescription_main_screen_texture"/>
+
+    <ImageView
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/stolpersteine_small"
+            android:contentDescription="@string/contentDescription_main_screen_logo"
+            android:visibility="invisible" />
+
+</RelativeLayout>

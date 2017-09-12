@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialKeyguardLayout="@layout/stolpersteinar_widget"
+    android:initialLayout="@layout/stolpersteinar_widget"
+    android:minHeight="@dimen/arapp_widget_size"
+    android:minWidth="@dimen/arapp_widget_size"
+    android:previewImage="@drawable/stolpersteine"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="86400000"
+    android:widgetCategory="home_screen"></appwidget-provider>

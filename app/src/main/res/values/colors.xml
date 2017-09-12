@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#616161</color>
+    <color name="colorPrimaryDark">#373737</color>
+    <color name="colorAccent">#8e8e8e</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="slide_background">@color/colorPrimary</color>
+    <color name="slide_buttons">@color/colorPrimaryDark</color>
+    <!--Splash Screen-->
+    <item name="splash_background" type="color">@color/colorPrimary</item>
+</resources>

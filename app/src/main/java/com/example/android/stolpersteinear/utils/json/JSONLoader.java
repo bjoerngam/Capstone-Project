@@ -41,7 +41,6 @@ public class JSONLoader extends AsyncTaskLoader<ArrayList<StolperSteine>> {
         StolperSteineGSONReader stolperSteineGSONReader;
 
         // Perform the network request, parse the response, and extract a list of stolpersteine.
-
         try {
             stolperSteineGSONReader = new StolperSteineGSONReader();
             return stolperSteineGSONReader.getStolperSteine(longitude, latitude);
@@ -50,4 +49,6 @@ public class JSONLoader extends AsyncTaskLoader<ArrayList<StolperSteine>> {
         }
         return null;
     }
+
+
 }

@@ -30,7 +30,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Menu;
@@ -70,9 +69,34 @@ import butterknife.ButterKnife;
 public class MainScreenActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ArrayList<StolperSteine>>, OnAzimuthChangedListener{
 
+    public final static String CURRENT_OBJECT = "Current_Object";
     private final static int LOADER_ID = 100;
     private static final String TAG = MainScreenActivity.class.getSimpleName();
+    private final static int MIN_DISTANCE = 0;
+    private final static int MIN_TIME = 400;
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    static double AZIMUTH_ACCURACY = 5;
 
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
+
+    /*** For the permissions +**/
+    final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
+    private final int FULL_CIRCLE = 360;
+    private final int HALF_CIRCLE = 180;
+    /*** Everything around GPS ***/
+    public LocationManager mLocationManager;
+    public String mLocationProvider;
+    public LocationListener mLocationListener;
+    public double latitude;
+    public double longitude;
+    public Handler mBackgroundHandler;
+    protected CaptureRequest.Builder captureRequestBuilder;
+    protected CameraCaptureSession cameraCaptureSessions;
     /*** GUI related ***/
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -80,49 +104,60 @@ public class MainScreenActivity extends AppCompatActivity
     ImageView mImageView;
     @BindView(R.id.texture)
     TextureView mTextureView;
-
-    /*** For the permissions +**/
-    final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
-
-    /*** Everything around GPS ***/
-    public LocationManager mLocationManager;
-    public String mLocationProvider;
-    public LocationListener mLocationListener;
-    public double latitude;
-    public double longitude;
-    private final static int MIN_DISTANCE = 0;
-    private final static int MIN_TIME = 400;
-
+    String cameraId;
+    double mAzimuthReal = 0;
+    double mAzimuthTheoretical = 0;
+    double mMyLatitude = 0;
+    double mMyLongitude = 0;
     /*** Everything around Camera ***/
     private CameraDevice cameraDevice;
     private Size imageDimension;
-    protected CaptureRequest.Builder captureRequestBuilder;
-    protected CameraCaptureSession cameraCaptureSessions;
-    public Handler mBackgroundHandler;
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
-    String cameraId;
+    TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            //Open the camera
+            openCamera();
+        }
 
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+            // Transform you image captured size according to the surface width and height
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            return false;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+        }
+    };
+    private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
+        @Override
+        public void onOpened(@NonNull CameraDevice camera) {
+            //This is called when the camera is open
+            cameraDevice = camera;
+            createCameraPreview();
+        }
+
+        @Override
+        public void onDisconnected(@NonNull CameraDevice camera) {
+            cameraDevice.close();
+        }
+
+        @Override
+        public void onError(@NonNull CameraDevice camera, int error) {
+            cameraDevice.close();
+            cameraDevice = null;
+        }
+    };
     /*** Everything around the correct position **/
     private AugmentedPOI mPoi;
-    double mAzimuthReal = 0;
-    double mAzimuthTheoretical = 0;
-    static double AZIMUTH_ACCURACY = 5;
-    double mMyLatitude = 0;
-    double mMyLongitude = 0;
     private MyCurrentAzimuth myCurrentAzimuth;
-
-    private final int FULL_CIRCLE = 360;
-    private final int HALF_CIRCLE = 180;
-
-    public final static String CURRENT_OBJECT = "Current_Object";
     private ArrayList<StolperSteine> mListStolperSteine;
     private boolean setImageView = false;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,33 +198,17 @@ public class MainScreenActivity extends AppCompatActivity
                         Manifest.permission.CAMERA}, REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
             }
         }
+
         getCurrentPosition();
         setStartPosition();
+
         getLoaderManager().initLoader(LOADER_ID, null, MainScreenActivity.this);
+
     }
 
     void setStartPosition(){
         mPoi = new AugmentedPOI( getLatitude(), getLongitude());
     }
-
-    TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
-        @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            //Open the camera
-            openCamera();
-        }
-        @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-            // Transform you image captured size according to the surface width and height
-        }
-        @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-            return false;
-        }
-        @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-        }
-    };
 
     /** Everything around the camera **/
     private void openCamera() {
@@ -208,24 +227,6 @@ public class MainScreenActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-
-    private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
-        @Override
-        public void onOpened(@NonNull CameraDevice camera) {
-            //This is called when the camera is open
-            cameraDevice = camera;
-            createCameraPreview();
-        }
-        @Override
-        public void onDisconnected(@NonNull CameraDevice camera) {
-            cameraDevice.close();
-        }
-        @Override
-        public void onError(@NonNull CameraDevice camera, int error) {
-            cameraDevice.close();
-            cameraDevice = null;
-        }
-    };
 
     protected void createCameraPreview() {
         try {
@@ -262,7 +263,8 @@ public class MainScreenActivity extends AppCompatActivity
     protected void updatePreview() {
         if(null == cameraDevice) {
             Snackbar.make(getCurrentFocus().findViewById(android.R.id.content),
-                    "There is a problem with the updatePreview", Snackbar.LENGTH_LONG).show();
+                    getResources().getString(R.string.updatepreview_location)
+                    , Snackbar.LENGTH_LONG).show();
         }
         captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
         try {
@@ -314,8 +316,14 @@ public class MainScreenActivity extends AppCompatActivity
                 setGPSTestCoordinates(3);
                 break;
             case R.id.action_activate_imageView:
-                mImageView.setVisibility(View.VISIBLE);
-                stolperSteinOnClickListener();
+                if (mListStolperSteine.size() > 0) {
+                    mImageView.setVisibility(View.VISIBLE);
+                    stolperSteinOnClickListener();
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            getResources().getString(R.string.error_empty_list)
+                            , Snackbar.LENGTH_LONG).show();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -327,11 +335,12 @@ public class MainScreenActivity extends AppCompatActivity
     public void showPositionOverview() {
         AlertDialog.Builder overviewDialog = new AlertDialog.Builder(this);
         overviewDialog.setTitle(getString(R.string.overview_title));
-        overviewDialog.setMessage("Current GPS Position: Latitude: "
-                + Double.toString(getLatitude()) + " Longitude: "
-                + Double.toString(getLongitude()) + " calculateTheoreticalAzimuth: "
-                + Double.toString(calculateTheoreticalAzimuth()) + " minAngle: "
-                + Double.toString(calculateAzimuthAccuracy(mAzimuthTheoretical).get(0)) + " maxAngle: "
+        overviewDialog.setMessage(getResources().getText(R.string.position_overview_01)
+                + Double.toString(getLatitude()) + getResources().getText(R.string.position_overview_02)
+                + Double.toString(getLongitude()) + getResources().getText(R.string.position_overview_03)
+                + Double.toString(calculateTheoreticalAzimuth()) + getResources().getText(R.string.position_overview_04)
+                + Double.toString(calculateAzimuthAccuracy(mAzimuthTheoretical).get(0))
+                + getResources().getText(R.string.position_overview_05)
                 + Double.toString(calculateAzimuthAccuracy(mAzimuthTheoretical).get(1)));
 
         AlertDialog alert = overviewDialog.create();
@@ -347,7 +356,6 @@ public class MainScreenActivity extends AppCompatActivity
                 setLongitude(6.9560689);
                 mPoi = new AugmentedPOI(getLatitude(), getLongitude());
                 getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
-                Log.i(TAG, Double.toString(getLongitude()) + " " +Double.toString(getLatitude()));
                 break;
             case 2:
                 //Victim: Josef Stern
@@ -356,7 +364,6 @@ public class MainScreenActivity extends AppCompatActivity
                 setLongitude(6.9601862);
                 mPoi = new AugmentedPOI(getLatitude(), getLongitude());
                 getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
-                Log.i(TAG, Double.toString(getLongitude()) + " " +Double.toString(getLatitude()));
                 break;
             case 3:
                 //Victim: Karl Callmann
@@ -365,26 +372,19 @@ public class MainScreenActivity extends AppCompatActivity
                 setLongitude(6.9459482);
                 mPoi = new AugmentedPOI(getLatitude(), getLongitude());
                 getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
-                Log.i(TAG, Double.toString(getLongitude()) + " " +Double.toString(getLatitude()));
                 break;
 
         }
 
     }
 
-    private void setLatitude (double latitude) {this.latitude = latitude;}
-    private void setLongitude (double longitude) {this.longitude = longitude;}
-
-
     @Override
     public Loader<ArrayList<StolperSteine>> onCreateLoader(int i, Bundle bundle) {
-        Log.i(TAG, "onCreateLoader" + " " + Double.toString(getLatitude()) + " " + getLongitude());
         return new JSONLoader(getApplicationContext(), getLongitude(), getLatitude());
     }
 
     @Override
     public void onLoadFinished(Loader<ArrayList<StolperSteine>> loader, ArrayList<StolperSteine> result) {
-        Log.i(TAG, "onLoadFinish" + " " + Double.toString(getLatitude()) + " " + getLongitude());
         mListStolperSteine = result;
         mPoi = new AugmentedPOI( getLongitude(), getLatitude() );
     }
@@ -394,7 +394,16 @@ public class MainScreenActivity extends AppCompatActivity
     }
 
     public double getLatitude (){ return  latitude; }
+
+    private void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
     public double getLongitude () { return  longitude; }
+
+    private void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
     /**
      * Check if we are having a working internet connection
@@ -411,12 +420,13 @@ public class MainScreenActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "On Resume function");
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            mLocationManager.requestLocationUpdates
-                    (mLocationProvider, MIN_TIME, MIN_DISTANCE, mLocationListener);
-            myCurrentAzimuth.start();
+            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                mLocationManager.requestLocationUpdates
+                        (mLocationProvider, MIN_TIME, MIN_DISTANCE, mLocationListener);
+                myCurrentAzimuth.start();
+            }
         }
     }
 
@@ -425,61 +435,75 @@ public class MainScreenActivity extends AppCompatActivity
         super.onPause();
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            mLocationManager.removeUpdates(mLocationListener);
+            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                mLocationManager.removeUpdates(mLocationListener);
+            }
         }
     }
 
     /**
      * Gets the current Position
      */
-
     public void getCurrentPosition(){
         mLocationManager = getSystemService(LocationManager.class);
 
-        //Creating a criteria with the best accuracy but also with the highest battery usage.
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setPowerRequirement(Criteria.POWER_HIGH);
-        mLocationProvider = mLocationManager.getBestProvider(criteria, true);
-        mLocationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                if (location != null){
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-                    Log.i(TAG, "onLocationChanged" + " " + Double.toString(latitude)
-                            + " " + Double.toString(longitude));
-                    getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
-                } else {
-                    Snackbar.make(findViewById(android.R.id.content),
-                            getString(R.string.no_gps_signal),
-                            Snackbar.LENGTH_LONG).show();
+        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            //Creating a criteria with the best accuracy but also with the highest battery usage.
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setPowerRequirement(Criteria.POWER_HIGH);
+            mLocationProvider = mLocationManager.getBestProvider(criteria, true);
+            mLocationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content),
+                                getString(R.string.no_gps_signal),
+                                Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int i, Bundle bundle) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            };
+
+        } else {
+            Snackbar.make(findViewById(android.R.id.content),
+                    getResources().getString(R.string.error_gps_not_present)
+                    , Snackbar.LENGTH_LONG).show();
+
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                // If there was no location change
+                if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+                    mLocationManager.requestLocationUpdates(mLocationProvider, 0, 0, mLocationListener);
+                    Location lastLocation = mLocationManager.getLastKnownLocation(mLocationProvider);
+                    if (lastLocation != null) {
+                        latitude = lastLocation.getLatitude();
+                        longitude = lastLocation.getLongitude();
+                        getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
+
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content),
+                                getResources().getString(R.string.error_gps_not_present)
+                                , Snackbar.LENGTH_LONG).show();
+                    }
                 }
             }
-
-            @Override
-            public void onStatusChanged(String provider, int i, Bundle bundle) {
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            // If there was no location change
-            mLocationManager.requestLocationUpdates(mLocationProvider, 0, 0, mLocationListener);
-            Location lastLocation = mLocationManager.getLastKnownLocation(mLocationProvider);
-            latitude = lastLocation.getLatitude();
-            longitude = lastLocation.getLongitude();
-            Log.i(TAG, "onLocationChanged Outside" + " " + Double.toString(latitude)
-                    + " " + Double.toString(longitude));
-            getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
         }
     }
 
@@ -609,6 +633,7 @@ public class MainScreenActivity extends AppCompatActivity
             mImageView.setVisibility(View.VISIBLE);
             stolperSteinOnClickListener();
         } else {
+            // Devel version feature
              //mImageView.setVisibility(View.INVISIBLE);
         }
     }

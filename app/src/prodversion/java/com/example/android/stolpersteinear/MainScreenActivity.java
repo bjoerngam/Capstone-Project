@@ -30,7 +30,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Menu;
@@ -299,13 +298,11 @@ public class MainScreenActivity extends AppCompatActivity
 
     @Override
     public Loader<ArrayList<StolperSteine>> onCreateLoader(int i, Bundle bundle) {
-        Log.i(TAG, "onCreateLoader" + " " + Double.toString(getLatitude()) + " " + getLongitude());
         return new JSONLoader(getApplicationContext(), getLongitude(), getLatitude());
     }
 
     @Override
     public void onLoadFinished(Loader<ArrayList<StolperSteine>> loader, ArrayList<StolperSteine> result) {
-        Log.i(TAG, "onLoadFinish" + " " + Double.toString(getLatitude()) + " " + getLongitude());
         mListStolperSteine = result;
         mPoi = new AugmentedPOI( getLongitude(), getLatitude() );
     }
@@ -332,12 +329,13 @@ public class MainScreenActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "On Resume function");
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            mLocationManager.requestLocationUpdates
-                    (mLocationProvider, MIN_TIME, MIN_DISTANCE, mLocationListener);
-            myCurrentAzimuth.start();
+            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                mLocationManager.requestLocationUpdates
+                        (mLocationProvider, MIN_TIME, MIN_DISTANCE, mLocationListener);
+                myCurrentAzimuth.start();
+            }
         }
     }
 
@@ -346,7 +344,9 @@ public class MainScreenActivity extends AppCompatActivity
         super.onPause();
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            mLocationManager.removeUpdates(mLocationListener);
+            if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                mLocationManager.removeUpdates(mLocationListener);
+            }
         }
     }
 
@@ -357,50 +357,61 @@ public class MainScreenActivity extends AppCompatActivity
     public void getCurrentPosition(){
         mLocationManager = getSystemService(LocationManager.class);
 
-        //Creating a criteria with the best accuracy but also with the highest battery usage.
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        criteria.setPowerRequirement(Criteria.POWER_HIGH);
-        mLocationProvider = mLocationManager.getBestProvider(criteria, true);
-        mLocationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                if (location != null){
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-                    Log.i(TAG, "onLocationChanged" + " " + Double.toString(latitude)
-                            + " " + Double.toString(longitude));
-                    getLoaderManager().initLoader(LOADER_ID, null, MainScreenActivity.this);
-                } else {
-                    Snackbar.make(findViewById(android.R.id.content),
-                            getString(R.string.no_gps_signal),
-                            Snackbar.LENGTH_LONG).show();
+        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            //Creating a criteria with the best accuracy but also with the highest battery usage.
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setPowerRequirement(Criteria.POWER_HIGH);
+            mLocationProvider = mLocationManager.getBestProvider(criteria, true);
+            mLocationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content),
+                                getString(R.string.no_gps_signal),
+                                Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int i, Bundle bundle) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            };
+
+        }else {
+            Snackbar.make(findViewById(android.R.id.content),
+                    getResources().getString(R.string.error_gps_not_present)
+                    , Snackbar.LENGTH_LONG).show();
+
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                // If there was no location change
+                if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+
+                mLocationManager.requestLocationUpdates(mLocationProvider, 0, 0, mLocationListener);
+                Location lastLocation = mLocationManager.getLastKnownLocation(mLocationProvider);
+                if (lastLocation != null) {
+                    latitude = lastLocation.getLatitude();
+                    longitude = lastLocation.getLongitude();
+                    getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
+
+                } else { Snackbar.make(findViewById(android.R.id.content),
+                        getResources().getString(R.string.error_gps_not_present)
+                        , Snackbar.LENGTH_LONG).show();}
                 }
             }
-
-            @Override
-            public void onStatusChanged(String provider, int i, Bundle bundle) {
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            // If there was no location change
-            mLocationManager.requestLocationUpdates(mLocationProvider, 0, 0, mLocationListener);
-            Location lastLocation = mLocationManager.getLastKnownLocation(mLocationProvider);
-            latitude = lastLocation.getLatitude();
-            longitude = lastLocation.getLongitude();
-            Log.i(TAG, "onLocationChanged Outside" + " " + Double.toString(latitude)
-                    + " " + Double.toString(longitude));
-            getLoaderManager().initLoader(LOADER_ID, null, MainScreenActivity.this);
         }
     }
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="menu_action_activate_image">Activate Image</string>
+    <string name="menu_action_location_overviews_screen">Show StolperStein Image</string>
+    <string name="menu_action_GPS_location_01">GPS Location 01</string>
+    <string name="menu_action_GPS_location_02">GPS Location 02</string>
+    <string name="menu_action_GPS_location_03">GPS Location 03</string>
+    <string name="overview_title">Location data</string>
+    <string name="snackbar_debug_version">This is the developer version</string>
+    <string name="position_overview_01">Current GPS Position: Latitude:</string>
+    <string name="position_overview_02">Longitude:</string>
+    <string name="position_overview_03">calculateTheoreticalAzimuth:</string>
+    <string name="position_overview_04">minAngle:</string>
+    <string name="position_overview_05">maxAngle:</string>
+    <string name="error_gps_not_present">Please activate your gps function</string>
+    <string name="error_empty_list">Currently the list is empty. Please choice first one of the GPS test positions.</string>
+</resources>

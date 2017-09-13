@@ -1,25 +1,24 @@
 package com.example.android.stolpersteinear.utils.json;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.android.stolpersteinear.data.StolperSteine;
 import com.example.android.stolpersteinear.data.gson.Stolpersteinedata;
-import com.example.android.stolpersteinear.utils.URLBuilder;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.CipherSuite;
-import okhttp3.ConnectionSpec;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.TlsVersion;
 
 /**
  * Created by Bjoern on 22.08.17.
@@ -37,46 +36,63 @@ class StolperSteineGSONReader{
 
     private static final int CURRENT_NUMBERS_OF_VICTIM = 1633;          // The current maximal number of victims
     private static final double GPS_TOLERANCE = 0.3;                    // Tolerance value for the difference between the OpenStreetData and the mobile device
+    private static String returnValue = "";
     private Stolpersteinedata mStoredStolperSteineData;                 // Here we are storing the result of the gson.fromJSON call
+
     /**
      * Inside the method getJSONData we are getting the whole JSON list from the FireBase source
      * @throws IOException if there is no connection possible.
      */
-    StolperSteineGSONReader () throws IOException {
+    StolperSteineGSONReader() throws IOException {
         Gson gson = new GsonBuilder().create();
-        mStoredStolperSteineData = gson.fromJson(getPlainData(URLBuilder.BASE_URL), Stolpersteinedata.class);
+        // mStoredStolperSteineData = gson.fromJson(getPlainData(URLBuilder.BASE_URL), Stolpersteinedata.class);
+        // mStoredStolperSteineData = gson.fromJson(getFireBaseStorage();)
+        getFireBaseStorage();
     }
 
-    /**
-     * Getting the JSON plain file via FireBase and setting up a HTTPS connection.
-     * @param url The fixed FireBase URL
-     * @return The JSON string
-     * @throws IOException throws an exception if its not possible to open the URL
-     */
-    private static String getPlainData(URL url) throws IOException {
 
-        final int TIMEOUT = 20000;
+    private void getFireBaseStorage() {
+        FirebaseStorage storage =
+                FirebaseStorage.getInstance();
+        StorageReference storageRef =
+                storage.getReferenceFromUrl("gs://stolpersteinar.appspot.com/")
+                        .child("stolpersteine-cologne.json");
 
-        // For HTTPS connection
-        ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                .tlsVersions(TlsVersion.TLS_1_2)
-                .cipherSuites(
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)
-                .build();
+        try {
+            final File localFile = File.createTempFile("stolpersteine", "json");
+            StorageTask<FileDownloadTask.TaskSnapshot> result = storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Log.i("FireBase", "File is present " + Long.toString(localFile.length()));
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.i("FireBase", "File is not there");
+                }
+            });
+            // Log.i("FireBase", result.());
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectionSpecs(Collections.singletonList(spec))
-                .readTimeout(TIMEOUT, TimeUnit.MILLISECONDS)
-                .build();
+        } catch (IOException ioexception) {
+            ioexception.printStackTrace();
+        }
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+    }
 
-        Response response = client.newCall(request).execute();
-        return response.body().string();
+    private void openFile(File localFile) {
+
+        try {
+            FileReader fr = new FileReader(localFile);
+            BufferedReader br = new BufferedReader(fr);
+            String sCurrentLine;
+            while ((sCurrentLine = br.readLine()) != null) {
+                returnValue += sCurrentLine;
+            }
+            System.out.println(returnValue);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        System.out.println(returnValue.length());
     }
 
     /**
@@ -136,8 +152,7 @@ class StolperSteineGSONReader{
                     mStolperSteineList.add(mStolperStein);
                     }
             }
-            // returns the list of the found StolperSteine.
-        Log.i(TAG, Integer.toString(mStolperSteineList.size()));
+        // returns the list of the found StolperSteine.F
         return mStolperSteineList;
     }
 
@@ -169,7 +184,6 @@ class StolperSteineGSONReader{
                 * Math.cos(gpsData_latitude/radian_translation)
                 * Math.cos (openStreetData_longitude/radian_translation - gpsData_longitude/radian_translation)) * earth_radius;
 
-        Log.i(TAG, Double.toString(distance));
         return (distance < GPS_TOLERANCE);
     }
 }

@@ -54,6 +54,7 @@ public class FavoritesAdapter extends CursorAdapter {
     @BindView(R.id.wwwStoredImageView)
     ImageView mWWWImageView;
 
+    private Context context;
     /**
      * The basic constructor
      * @param context The context is the FavoritesActivity.
@@ -61,6 +62,7 @@ public class FavoritesAdapter extends CursorAdapter {
      */
     public FavoritesAdapter(Context context, Cursor c) {
         super(context, c, 0);
+        this.context = context;
     }
 
     /**
@@ -111,7 +113,7 @@ public class FavoritesAdapter extends CursorAdapter {
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(cursor.getString(cursor.getColumnIndex(StolperSteineContract.InventoryEntry.Website))));
-                view.getContext().startActivity(intent);
+                context.startActivity(intent);
             }
         });
     }

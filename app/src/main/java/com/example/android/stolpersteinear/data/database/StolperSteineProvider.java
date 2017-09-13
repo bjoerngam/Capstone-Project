@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 /**
  * Created by bjoern on 24.08.17.
@@ -184,7 +183,6 @@ public class StolperSteineProvider extends ContentProvider {
         long id = database.insert(StolperSteineContract.InventoryEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
-            Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
         }
         // Notify all listeners that the data has changed for the product content URI

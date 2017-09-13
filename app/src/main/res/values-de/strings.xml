@@ -23,10 +23,9 @@
     <string name="contentDescription_main_screen_texture">Kamera Ansicht</string>
     <string name="contentDescription_photo_of_the_victim">Foto des Opfers</string>
     <string name="detail_store_dataset">Sichern</string>
-    <string name="dummy_button"></string>
+    <string name="dummy_button">Test Kopf</string>
     <string name="fav_subtitle">der Opfer</string>
     <string name="fav_title_toolbar">Lokal gespeicherte Daten</string>
-    <string name="licenceslide_text"></string>
     <string name="menu_action_GPS_location_01">GPS Position 01</string>
     <string name="menu_action_GPS_location_02">GPS Postion 02</string>
     <string name="menu_action_GPS_location_03">GPS Position 03</string>
@@ -51,4 +50,15 @@
     <string name="victim_is_already_saved">Der Eintrag ist schon vorhanden</string>
     <string name="widget_empty_view">Keine Daten vorhanden</string>
     <string name="widget_headline">Lokal gespeicherte Daten</string>
+    <string name="dummy_content">Test Inhalt</string>
+    <string name="licenceslide_text"><![CDATA[For this project I used the following libraries and sources.For the position     of the "solpersteine" I used https://openstreetmaps.org/ and for getting the proper     JSON objects out of this map I used https://overpass-turbo.eu/ <p>For the whole HTTPS traffic issue I used     the OKHTTP3 https://github.com/square/okhttp/tree/master/okhttp/src/main/java/okhttp3. <p>For parsing the JSON     objects I used GSON https://github.com/google/gson. For creating the nice info slides     I used Android Material Intro Screen https://github.com/TangoAgency/material-intro-screen.<p>     For the GPS matching approach I used the blog of Krzysztof Jackowski     https://www.netguru.co/blog/augmented-reality-mobile-android For displaying the images I used     the Picasso library https://square.github.io/picasso/ and for getting ride of some line of     codes I am using the butterknife https://jakewharton.github.io/butterknife/<p>     The whole project is an open source project and you can get the source code at     https://github.com/bjoerngam/ If you have any kind of questions contact me via devel@bjoern.cologne]]></string>
+    <string name="no_location_detected">Keine Signal</string>
+    <string name="menu_action_activate_image">Zeige Bild an</string>
+    <string name="position_overview_01">Momentane GPS Position Breitengrad:</string>
+    <string name="position_overview_02">Längengrad:</string>
+    <string name="position_overview_03">errechneter theoretischer Winkel</string>
+    <string name="position_overview_04">minimaler Winkel:</string>
+    <string name="position_overview_05">maximaler Winkel:</string>
+    <string name="error_gps_not_present">Bitte aktivieren Sie den GPS Empfänger</string>
+    <string name="error_empty_list">Momentan ist die List leer. Bitte wählen Sie erst einer der drei Test GPS Positionen.</string>
 </resources>

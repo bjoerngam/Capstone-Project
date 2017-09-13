@@ -6,7 +6,6 @@ import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 
@@ -14,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.content.ContentValues.TAG;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -118,7 +116,6 @@ public class StoringOneEntry {
                 InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                         "pm grant " + InstrumentationRegistry.getTargetContext().getPackageName()
                                 + " " + permission);
-            Log.i(TAG, "Permission");
         }
     }
 

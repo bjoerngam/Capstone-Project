@@ -34,7 +34,7 @@
     based on the data of the Openstreemap project! Maybe some Stolpersteine are missing or some
     information are incorrect.</string>
     <string name="about_infoslide_headline">Licence</string>
-    <string name="licenceslide_text"><![CDATA[For this project I used the following libraries and sources.For the position
+    <string name="licenceslide_text" translatable="false"><![CDATA[For this project I used the following libraries and sources.For the position
     of the "solpersteine" I used https://openstreetmaps.org/ and for getting the proper
     JSON objects out of this map I used https://overpass-turbo.eu/ <p>For the whole HTTPS traffic issue I used
     the OKHTTP3 https://github.com/square/okhttp/tree/master/okhttp/src/main/java/okhttp3. <p>For parsing the JSON

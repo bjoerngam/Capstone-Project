@@ -14,7 +14,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -108,13 +110,25 @@ class StolperSteineGSONReader{
             localFile = File.createTempFile("stolpersteine", "json");
             storageRef.getFile(localFile).addOnSuccessListener(
                     new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Log.i(TAG, "File is present Loader " + localFile.getAbsolutePath());
-                    Log.i(TAG, "File-Size: " + Long.toString(localFile.length()));
-                    StolperSteineGSONReader.this.name = localFile.getAbsolutePath();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            Log.i(TAG, "File is present Loader " + localFile.getAbsolutePath());
+                            Log.i(TAG, "File-Size: " + Long.toString(localFile.length()));
+                            String returnValue = "";
+                            StolperSteineGSONReader.this.name = localFile.getAbsolutePath();
+                            try {
+                                FileReader fr = new FileReader(localFile);
+                                BufferedReader br = new BufferedReader(fr);
+                                String sCurrentLine;
+                                while ((sCurrentLine = br.readLine()) != null) {
+                                    returnValue += sCurrentLine;
+                                }
+                                Log.i(TAG, "inside:" + returnValue);
+                            } catch (IOException exception) {
+                                exception.printStackTrace();
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     Log.i(TAG, "File is not there Loader");
@@ -125,7 +139,6 @@ class StolperSteineGSONReader{
             ioexception.printStackTrace();
         }
 
-        Log.i(TAG, name);
     }
 
     /**

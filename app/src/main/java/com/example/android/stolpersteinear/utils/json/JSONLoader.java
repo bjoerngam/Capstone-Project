@@ -50,5 +50,4 @@ public class JSONLoader extends AsyncTaskLoader<ArrayList<StolperSteine>> {
         return null;
     }
 
-
 }

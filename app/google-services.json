@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "380051564684-fitgfn99hf0pchoanbo0lhto21q7ej1d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.stolpersteinear",
+            "certificate_hash": "46545de31dcbec24af3f05c1dd598de5cd9cf523"
+          }
+        },
+        {
           "client_id": "380051564684-n4s75ojjcsd69u543h9jij2qb9rjuhvo.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380051564684-n4s75ojjcsd69u543h9jij2qb9rjuhvo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -47,6 +47,7 @@ import com.example.android.stolpersteinear.data.StolperSteine;
 import com.example.android.stolpersteinear.data.database.StolperSteineContract;
 import com.example.android.stolpersteinear.utils.dialog.AboutDialog;
 import com.example.android.stolpersteinear.utils.json.JSONLoader;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,10 +68,34 @@ import butterknife.ButterKnife;
 public class MainScreenActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ArrayList<StolperSteine>>, OnAzimuthChangedListener{
 
+    public final static String CURRENT_OBJECT = "Current_Object";
     private final static int LOADER_ID = 100;
     private static final String TAG = MainScreenActivity.class.getSimpleName();
-    private FirebaseAnalytics mFirebaseAnalytics;
+    private final static int MIN_DISTANCE = 0;
+    private final static int MIN_TIME = 400;
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    static double AZIMUTH_ACCURACY = 5;
 
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
+
+    /*** For the permissions +**/
+    final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
+    private final int FULL_CIRCLE = 360;
+    private final int HALF_CIRCLE = 180;
+    /*** Everything around GPS ***/
+    public LocationManager mLocationManager;
+    public String mLocationProvider;
+    public LocationListener mLocationListener;
+    public double latitude;
+    public double longitude;
+    public Handler mBackgroundHandler;
+    protected CaptureRequest.Builder captureRequestBuilder;
+    protected CameraCaptureSession cameraCaptureSessions;
     /*** GUI related ***/
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -78,47 +103,58 @@ public class MainScreenActivity extends AppCompatActivity
     ImageView mImageView;
     @BindView(R.id.texture)
     TextureView mTextureView;
-
-    /*** For the permissions +**/
-    final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
-
-    /*** Everything around GPS ***/
-    public LocationManager mLocationManager;
-    public String mLocationProvider;
-    public LocationListener mLocationListener;
-    public double latitude;
-    public double longitude;
-    private final static int MIN_DISTANCE = 0;
-    private final static int MIN_TIME = 400;
-
+    String cameraId;
+    double mAzimuthReal = 0;
+    double mAzimuthTheoretical = 0;
+    double mMyLatitude = 0;
+    double mMyLongitude = 0;
+    private FirebaseAnalytics mFirebaseAnalytics;
     /*** Everything around Camera ***/
     private CameraDevice cameraDevice;
     private Size imageDimension;
-    protected CaptureRequest.Builder captureRequestBuilder;
-    protected CameraCaptureSession cameraCaptureSessions;
-    public Handler mBackgroundHandler;
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
-    String cameraId;
+    TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            //Open the camera
+            openCamera();
+        }
 
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+            // Transform you image captured size according to the surface width and height
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            return false;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+        }
+    };
+    private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
+        @Override
+        public void onOpened(@NonNull CameraDevice camera) {
+            //This is called when the camera is open
+            cameraDevice = camera;
+            createCameraPreview();
+        }
+
+        @Override
+        public void onDisconnected(@NonNull CameraDevice camera) {
+            cameraDevice.close();
+        }
+
+        @Override
+        public void onError(@NonNull CameraDevice camera, int error) {
+            cameraDevice.close();
+            cameraDevice = null;
+        }
+    };
     /*** Everything around the correct position **/
     private AugmentedPOI mPoi;
-    double mAzimuthReal = 0;
-    double mAzimuthTheoretical = 0;
-    static double AZIMUTH_ACCURACY = 5;
-    double mMyLatitude = 0;
-    double mMyLongitude = 0;
     private MyCurrentAzimuth myCurrentAzimuth;
-
-    private final int FULL_CIRCLE = 360;
-    private final int HALF_CIRCLE = 180;
-
-    public final static String CURRENT_OBJECT = "Current_Object";
     private ArrayList<StolperSteine> mListStolperSteine;
 
     @Override
@@ -165,25 +201,6 @@ public class MainScreenActivity extends AppCompatActivity
         mPoi = new AugmentedPOI( getLatitude(), getLongitude());
     }
 
-    TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
-        @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            //Open the camera
-            openCamera();
-        }
-        @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-            // Transform you image captured size according to the surface width and height
-        }
-        @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-            return false;
-        }
-        @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-        }
-    };
-
     /** Everything around the camera **/
     private void openCamera() {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -201,24 +218,6 @@ public class MainScreenActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-
-    private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
-        @Override
-        public void onOpened(@NonNull CameraDevice camera) {
-            //This is called when the camera is open
-            cameraDevice = camera;
-            createCameraPreview();
-        }
-        @Override
-        public void onDisconnected(@NonNull CameraDevice camera) {
-            cameraDevice.close();
-        }
-        @Override
-        public void onError(@NonNull CameraDevice camera, int error) {
-            cameraDevice.close();
-            cameraDevice = null;
-        }
-    };
 
     protected void createCameraPreview() {
         try {
@@ -432,6 +431,15 @@ public class MainScreenActivity extends AppCompatActivity
         myCurrentAzimuth.start();
     }
 
+    private String getListOfVictimsNames() {
+        String wholeList = "";
+        if (!mListStolperSteine.isEmpty()) {
+            for (int i = 0; i < mListStolperSteine.size(); i++) {
+                wholeList += mListStolperSteine.get(i).getVName() + " ";
+            }
+        }
+        return wholeList;
+    }
     /**
      * In here the theoretical azimuth will be calculated.
      * 180 degree = half circle

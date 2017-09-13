@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'key1'
             keyPassword 'Notes123'
-            storeFile file('/home/bjoern/AndroidKeys/stolpersteinear.jks')
+            storeFile file("$rootDir/stolpersteinear.jks")
             storePassword 'Notes123'
         }
     }

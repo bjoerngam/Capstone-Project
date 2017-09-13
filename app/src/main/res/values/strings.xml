@@ -14,4 +14,5 @@
     <string name="position_overview_05">maxAngle:</string>
     <string name="error_gps_not_present">Please activate your gps function</string>
     <string name="error_empty_list">Currently the list is empty. Please choice first one of the GPS test positions.</string>
+    <string name="updatepreview_location">GPS update location problem</string>
 </resources>

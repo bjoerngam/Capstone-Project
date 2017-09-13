@@ -10,7 +10,9 @@ There are two flavours in my project for your purpose you have to
 use the devel tree. I added here three different GPS settings with them you can test three different 
 positions in Cologne. The distance is 300 meters.
 
-For the Espresso tests: You should also use the devel flavour.
+For the Espresso tests: You should also use the devel flavour. 
+
+I added also as second google service firebase analytics.
 
 # About the project 
 For this project I used the following libraries and sources.For the position

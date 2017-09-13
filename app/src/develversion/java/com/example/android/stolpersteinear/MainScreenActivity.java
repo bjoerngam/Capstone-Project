@@ -47,6 +47,7 @@ import com.example.android.stolpersteinear.data.StolperSteine;
 import com.example.android.stolpersteinear.data.database.StolperSteineContract;
 import com.example.android.stolpersteinear.utils.dialog.AboutDialog;
 import com.example.android.stolpersteinear.utils.json.JSONLoader;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,10 +72,9 @@ public class MainScreenActivity extends AppCompatActivity
 
     public final static String CURRENT_OBJECT = "Current_Object";
     private final static int LOADER_ID = 100;
-    private static final String TAG = MainScreenActivity.class.getSimpleName();
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private final static int MIN_DISTANCE = 0;
     private final static int MIN_TIME = 400;
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static double AZIMUTH_ACCURACY = 5;
 
     static {
@@ -109,6 +109,7 @@ public class MainScreenActivity extends AppCompatActivity
     double mAzimuthTheoretical = 0;
     double mMyLatitude = 0;
     double mMyLongitude = 0;
+    private FirebaseAnalytics mFirebaseAnalytics;
     /*** Everything around Camera ***/
     private CameraDevice cameraDevice;
     private Size imageDimension;
@@ -156,15 +157,13 @@ public class MainScreenActivity extends AppCompatActivity
     private AugmentedPOI mPoi;
     private MyCurrentAzimuth myCurrentAzimuth;
     private ArrayList<StolperSteine> mListStolperSteine;
-    private boolean setImageView = false;
-    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainscreen);
         ButterKnife.bind(this);
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //Making the toolbar nice
         mToolbar.setTitle("");
         mToolbar.showOverflowMenu();
@@ -201,7 +200,6 @@ public class MainScreenActivity extends AppCompatActivity
 
         getCurrentPosition();
         setStartPosition();
-
         getLoaderManager().initLoader(LOADER_ID, null, MainScreenActivity.this);
 
     }
@@ -435,7 +433,7 @@ public class MainScreenActivity extends AppCompatActivity
         super.onPause();
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && mLocationListener != null) {
                 mLocationManager.removeUpdates(mLocationListener);
             }
         }
@@ -606,6 +604,9 @@ public class MainScreenActivity extends AppCompatActivity
      * A small helper function. Here I'm setting up the onClickListener for the imageView.
      */
     private void stolperSteinOnClickListener(){
+        mFirebaseAnalytics.setUserProperty("clicked_victim", getListOfVictimsNames());
+        mFirebaseAnalytics.setUserProperty("users_position",
+                Double.toString(getLatitude()) + " " + Double.toString(getLongitude()));
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -614,6 +615,16 @@ public class MainScreenActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+    }
+
+    private String getListOfVictimsNames() {
+        String wholeList = "";
+        if (!mListStolperSteine.isEmpty()) {
+            for (int i = 0; i < mListStolperSteine.size(); i++) {
+                wholeList += mListStolperSteine.get(i).getVName() + " ";
+            }
+        }
+        return wholeList;
     }
 
     /**

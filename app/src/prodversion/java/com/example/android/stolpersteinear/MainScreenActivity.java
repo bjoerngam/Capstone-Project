@@ -69,6 +69,7 @@ public class MainScreenActivity extends AppCompatActivity
 
     private final static int LOADER_ID = 100;
     private static final String TAG = MainScreenActivity.class.getSimpleName();
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     /*** GUI related ***/
     @BindView(R.id.toolbar)
@@ -125,7 +126,7 @@ public class MainScreenActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainscreen);
         ButterKnife.bind(this);
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //Making the toolbar nice
         mToolbar.setTitle("");
         mToolbar.showOverflowMenu();
@@ -514,6 +515,9 @@ public class MainScreenActivity extends AppCompatActivity
      * A small helper function. Here I'm setting up the onClickListener for the imageView.
      */
     private void stolperSteinOnClickListener(){
+        mFirebaseAnalytics.setUserProperty("clicked_victim", getListOfVictimsNames());
+        mFirebaseAnalytics.setUserProperty("users_position",
+                Double.toString(getLatitude()) + " " + Double.toString(getLongitude()));
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

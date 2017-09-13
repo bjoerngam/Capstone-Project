@@ -1,22 +1,11 @@
 package com.example.android.stolpersteinear.utils.json;
 
-import android.support.annotation.NonNull;
-import android.util.Log;
-
 import com.example.android.stolpersteinear.data.StolperSteine;
 import com.example.android.stolpersteinear.data.gson.Stolpersteinedata;
 import com.example.android.stolpersteinear.utils.URLBuilder;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,11 +31,8 @@ import okhttp3.TlsVersion;
 
 class StolperSteineGSONReader{
 
-    private static final String TAG = StolperSteineGSONReader.class.getSimpleName();
-
     private static final int CURRENT_NUMBERS_OF_VICTIM = 1633;          // The current maximal number of victims
     private static final double GPS_TOLERANCE = 0.3;                    // Tolerance value for the difference between the OpenStreetData and the mobile device
-    String name = "";
     private Stolpersteinedata mStoredStolperSteineData;                 // Here we are storing the result of the gson.fromJSON call
     /**
      * Inside the method getJSONData we are getting the whole JSON list from the FireBase source
@@ -56,8 +42,6 @@ class StolperSteineGSONReader{
 
         Gson gson = new GsonBuilder().create();
         mStoredStolperSteineData = gson.fromJson(getPlainData(URLBuilder.BASE_URL), Stolpersteinedata.class);
-        getFireBaseStorage();
-        //mStoredStolperSteineData = gson.fromJson(getmJSONReturnValue(), Stolpersteinedata.class);
     }
 
     /**
@@ -93,53 +77,6 @@ class StolperSteineGSONReader{
         return response.body().string();
     }
 
-    private void getFireBaseStorage() {
-
-        String returnValue = "";
-
-        String path ="";
-        FirebaseStorage storage =
-                FirebaseStorage.getInstance();
-        StorageReference storageRef =
-                storage.getReferenceFromUrl("gs://stolpersteinar.appspot.com/")
-                        .child("stolpersteine-cologne.json");
-
-        final File localFile;
-
-        try {
-            localFile = File.createTempFile("stolpersteine", "json");
-            storageRef.getFile(localFile).addOnSuccessListener(
-                    new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            Log.i(TAG, "File is present Loader " + localFile.getAbsolutePath());
-                            Log.i(TAG, "File-Size: " + Long.toString(localFile.length()));
-                            String returnValue = "";
-                            StolperSteineGSONReader.this.name = localFile.getAbsolutePath();
-                            try {
-                                FileReader fr = new FileReader(localFile);
-                                BufferedReader br = new BufferedReader(fr);
-                                String sCurrentLine;
-                                while ((sCurrentLine = br.readLine()) != null) {
-                                    returnValue += sCurrentLine;
-                                }
-                                Log.i(TAG, "inside:" + returnValue);
-                            } catch (IOException exception) {
-                                exception.printStackTrace();
-                            }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Log.i(TAG, "File is not there Loader");
-                }
-            });
-
-        } catch (IOException ioexception) {
-            ioexception.printStackTrace();
-        }
-
-    }
 
     /**
      * Looking if at our current position there is a stolperstein

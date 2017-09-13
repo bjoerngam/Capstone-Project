@@ -28,7 +28,6 @@ public class LicenceDialog extends SlideFragment{
     @BindView(R.id.licenceTextView)
     TextView mLicenceText;
 
-    @SuppressWarnings("deprecation")
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -37,9 +36,9 @@ public class LicenceDialog extends SlideFragment{
         // Cant reproduce the error oof the review hopefully this will work:
         // Thanks to: https://stackoverflow.com/questions/37904739/html-fromhtml-deprecated-in-android-n
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            Html.fromHtml(getString(R.string.licenceslide_text), Html.FROM_HTML_MODE_LEGACY);
+            mLicenceText.setText(Html.fromHtml(getString(R.string.licenceslide_text), Html.FROM_HTML_MODE_LEGACY));
         } else {
-            Html.fromHtml(getString(R.string.licenceslide_text));
+            mLicenceText.setText(Html.fromHtml(getString(R.string.licenceslide_text)));
         }
             return view;
         }

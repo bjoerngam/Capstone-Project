@@ -445,7 +445,6 @@ public class MainScreenActivity extends AppCompatActivity
     public void getCurrentPosition(){
         mLocationManager = getSystemService(LocationManager.class);
 
-        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //Creating a criteria with the best accuracy but also with the highest battery usage.
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
@@ -478,10 +477,6 @@ public class MainScreenActivity extends AppCompatActivity
                 }
             };
 
-        } else {
-            Snackbar.make(findViewById(android.R.id.content),
-                    getResources().getString(R.string.error_gps_not_present)
-                    , Snackbar.LENGTH_LONG).show();
 
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {

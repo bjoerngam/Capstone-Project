@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Menu;
@@ -344,7 +345,7 @@ public class MainScreenActivity extends AppCompatActivity
         super.onPause();
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 mLocationManager.removeUpdates(mLocationListener);
             }
         }
@@ -356,12 +357,12 @@ public class MainScreenActivity extends AppCompatActivity
 
     public void getCurrentPosition(){
         mLocationManager = getSystemService(LocationManager.class);
-
-        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+        Log.i(TAG, "Pos");
             //Creating a criteria with the best accuracy but also with the highest battery usage.
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
             criteria.setPowerRequirement(Criteria.POWER_HIGH);
+        Log.i(TAG, "Pos inside");
             mLocationProvider = mLocationManager.getBestProvider(criteria, true);
             mLocationListener = new LocationListener() {
                 @Override
@@ -369,6 +370,7 @@ public class MainScreenActivity extends AppCompatActivity
                     if (location != null) {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
+                        Log.i(TAG, Double.toString(latitude) + " " + Double.toString(longitude));
                         getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
                     } else {
                         Snackbar.make(findViewById(android.R.id.content),
@@ -390,11 +392,6 @@ public class MainScreenActivity extends AppCompatActivity
                 }
             };
 
-        }else {
-            Snackbar.make(findViewById(android.R.id.content),
-                    getResources().getString(R.string.error_gps_not_present)
-                    , Snackbar.LENGTH_LONG).show();
-
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 // If there was no location change
@@ -405,6 +402,7 @@ public class MainScreenActivity extends AppCompatActivity
                 if (lastLocation != null) {
                     latitude = lastLocation.getLatitude();
                     longitude = lastLocation.getLongitude();
+                    Log.i(TAG, Double.toString(latitude) + " " + Double.toString(longitude));
                     getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
 
                 } else { Snackbar.make(findViewById(android.R.id.content),
@@ -412,7 +410,6 @@ public class MainScreenActivity extends AppCompatActivity
                         , Snackbar.LENGTH_LONG).show();}
                 }
             }
-        }
     }
 
     @Override

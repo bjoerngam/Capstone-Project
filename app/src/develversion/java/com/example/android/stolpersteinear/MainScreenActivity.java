@@ -482,7 +482,6 @@ public class MainScreenActivity extends AppCompatActivity
                     && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 // If there was no location change
                 if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
                     mLocationManager.requestLocationUpdates(mLocationProvider, 0, 0, mLocationListener);
                     Location lastLocation = mLocationManager.getLastKnownLocation(mLocationProvider);
                     if (lastLocation != null) {
@@ -497,7 +496,6 @@ public class MainScreenActivity extends AppCompatActivity
                     }
                 }
             }
-        }
     }
 
     @Override

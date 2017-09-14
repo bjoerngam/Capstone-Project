@@ -1,5 +1,7 @@
 package com.example.android.stolpersteinear.utils.json;
 
+import android.util.Log;
+
 import com.example.android.stolpersteinear.data.StolperSteine;
 import com.example.android.stolpersteinear.data.gson.Stolpersteinedata;
 import com.example.android.stolpersteinear.utils.URLBuilder;
@@ -107,6 +109,7 @@ class StolperSteineGSONReader{
                         mStoredStolperSteineData.getFeatures().get(i).getGeometry().getCoordinates().get(1),
                         latitude,
                         longitude))) {
+
                     // Getting all of the JSON elements
                     victimName = mStoredStolperSteineData
                             .getFeatures().get(i).getProperties().getName();
@@ -167,6 +170,9 @@ class StolperSteineGSONReader{
                 * Math.cos(gpsData_latitude/radian_translation)
                 * Math.cos (openStreetData_longitude/radian_translation - gpsData_longitude/radian_translation)) * earth_radius;
 
+        Log.i("Distance", Double.toString(distance));
+        Log.i("Distance:", Double.toString(openStreetData_latitude) + " " + Double.toString(openStreetData_longitude)
+                + " GPS:" + Double.toString(gpsData_latitude) + " " + Double.toString(gpsData_longitude));
         return (distance < GPS_TOLERANCE);
     }
 }

@@ -332,7 +332,7 @@ public class MainScreenActivity extends AppCompatActivity
         super.onResume();
         if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || mLocationListener != null) {
                 mLocationManager.requestLocationUpdates
                         (mLocationProvider, MIN_TIME, MIN_DISTANCE, mLocationListener);
                 myCurrentAzimuth.start();
@@ -357,12 +357,12 @@ public class MainScreenActivity extends AppCompatActivity
 
     public void getCurrentPosition(){
         mLocationManager = getSystemService(LocationManager.class);
-        Log.i(TAG, "Pos");
+
             //Creating a criteria with the best accuracy but also with the highest battery usage.
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_FINE);
             criteria.setPowerRequirement(Criteria.POWER_HIGH);
-        Log.i(TAG, "Pos inside");
+            Log.i(TAG, "Pos inside");
             mLocationProvider = mLocationManager.getBestProvider(criteria, true);
             mLocationListener = new LocationListener() {
                 @Override
@@ -395,8 +395,6 @@ public class MainScreenActivity extends AppCompatActivity
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 // If there was no location change
-                if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-
                 mLocationManager.requestLocationUpdates(mLocationProvider, 0, 0, mLocationListener);
                 Location lastLocation = mLocationManager.getLastKnownLocation(mLocationProvider);
                 if (lastLocation != null) {
@@ -404,10 +402,6 @@ public class MainScreenActivity extends AppCompatActivity
                     longitude = lastLocation.getLongitude();
                     Log.i(TAG, Double.toString(latitude) + " " + Double.toString(longitude));
                     getLoaderManager().restartLoader(LOADER_ID, null, MainScreenActivity.this);
-
-                } else { Snackbar.make(findViewById(android.R.id.content),
-                        getResources().getString(R.string.error_gps_not_present)
-                        , Snackbar.LENGTH_LONG).show();}
                 }
             }
     }
@@ -445,8 +439,8 @@ public class MainScreenActivity extends AppCompatActivity
      */
     public double calculateTheoreticalAzimuth() {
 
-        double dX = mPoi.getPoiLatitude() - mMyLatitude;
-        double dY = mPoi.getPoiLongitude() - mMyLongitude;
+        double dX = mPoi.getPoiLatitude() - getLatitude();
+        double dY = mPoi.getPoiLongitude() - getLongitude();
 
         double phiAngle;
         double tanPhi;

@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.example.android.stolpersteinear.data.database.StolperSteineContract;
-import com.example.android.stolpersteinear.utils.Adapter.FavoritesAdapter;
+import com.example.android.stolpersteinear.utils.adapter.FavoritesAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

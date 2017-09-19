@@ -1,4 +1,4 @@
-package com.example.android.stolpersteinear.utils.Adapter;
+package com.example.android.stolpersteinear.utils.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;

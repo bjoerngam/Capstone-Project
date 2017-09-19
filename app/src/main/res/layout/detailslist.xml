@@ -45,8 +45,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/detail_view_default_padding"
-            android:layout_marginTop="@dimen/detail_view_victim_dates_margin_top"
-            android:layout_toEndOf="@id/textviewVictimBornDate"
+            android:layout_marginTop="@dimen/detail_view_victim_dates_death_margin_top"
+            android:layout_toEndOf="@id/imageVictim"
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/detail_view_default_textSize" />
 

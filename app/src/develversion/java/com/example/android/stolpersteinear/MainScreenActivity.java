@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Menu;
@@ -38,6 +39,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.stolpersteinear.ar.position.AugmentedPOI;
@@ -97,6 +99,7 @@ public class MainScreenActivity extends AppCompatActivity
     public Handler mBackgroundHandler;
     protected CaptureRequest.Builder captureRequestBuilder;
     protected CameraCaptureSession cameraCaptureSessions;
+    int accuray = 0;
     /*** GUI related ***/
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -104,11 +107,12 @@ public class MainScreenActivity extends AppCompatActivity
     ImageView mImageView;
     @BindView(R.id.texture)
     TextureView mTextureView;
+    @BindView(R.id.tvDirection)
+    TextView mTVPresent;
+
     String cameraId;
     double mAzimuthReal = 0;
     double mAzimuthTheoretical = 0;
-    double mMyLatitude = 0;
-    double mMyLongitude = 0;
     private FirebaseAnalytics mFirebaseAnalytics;
     /*** Everything around Camera ***/
     private CameraDevice cameraDevice;
@@ -512,6 +516,8 @@ public class MainScreenActivity extends AppCompatActivity
     private void setupListeners() {
         myCurrentAzimuth = new MyCurrentAzimuth(this, this);
         myCurrentAzimuth.start();
+        accuray = myCurrentAzimuth.getAccureny();
+        Log.i("MainScreen", Integer.toString(accuray));
     }
 
     /**
@@ -522,11 +528,16 @@ public class MainScreenActivity extends AppCompatActivity
      */
     public double calculateTheoreticalAzimuth() {
 
-        double dX = mPoi.getPoiLatitude() - mMyLatitude;
-        double dY = mPoi.getPoiLongitude() - mMyLongitude;
+        double dX = mPoi.getPoiLatitude() - getLatitude();
+        double dY = mPoi.getPoiLongitude() - getLongitude();
 
         double phiAngle;
         double tanPhi;
+
+        Log.i("MainScrenn", "dx:" + Double.toString(dX) + " " + "dy:"
+                + Double.toString(dY) + " mPoi.getPoiLatitude:" + Double.toString(mPoi.getPoiLatitude())
+                + " mPoi.getPoiLongitude: " + Double.toString(mPoi.getPoiLongitude()) + " MyLatitude:"
+                + Double.toString(getLatitude()) + " MyLongitude:" + Double.toString(getLongitude()));
 
         tanPhi = Math.abs(dY / dX);
         phiAngle = Math.atan(tanPhi);
@@ -534,14 +545,22 @@ public class MainScreenActivity extends AppCompatActivity
 
         if (dX > 0 && dY > 0) {
             // We are in the first quarter of the circle.
+            mTVPresent.setVisibility(View.VISIBLE);
+            mTVPresent.setText("1. Quarter" + " " + Integer.toString(accuray));
             return phiAngle;
         } else if (dX < 0 && dY > 0) {
+            mTVPresent.setVisibility(View.VISIBLE);
+            mTVPresent.setText("2. Quarter" + " " + Integer.toString(accuray));
             // We are in the second quarter of the circle.
             return HALF_CIRCLE - phiAngle;
         } else if (dX < 0 && dY < 0) {
+            mTVPresent.setVisibility(View.VISIBLE);
+            mTVPresent.setText("3. Quarter" + " " + Integer.toString(accuray));
             // We are in the third quarter of the circle.
             return HALF_CIRCLE + phiAngle;
         } else if (dX > 0 && dY < 0) {
+            mTVPresent.setVisibility(View.VISIBLE);
+            mTVPresent.setText("4. Quarter" + " " + Integer.toString(accuray));
             // We are in the fourth quarter of the circle.
             return FULL_CIRCLE - phiAngle;
         }
@@ -638,7 +657,7 @@ public class MainScreenActivity extends AppCompatActivity
             stolperSteinOnClickListener();
         } else {
             // Devel version feature
-             //mImageView.setVisibility(View.INVISIBLE);
+            mImageView.setVisibility(View.INVISIBLE);
         }
     }
 

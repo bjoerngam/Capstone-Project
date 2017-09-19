@@ -20,6 +20,7 @@ public class MyCurrentAzimuth implements SensorEventListener {
     private int azimuthFrom = 0;
     private int azimuthTo = 0;
     private OnAzimuthChangedListener mAzimuthListener;
+    private int accureny;
 
     public MyCurrentAzimuth(OnAzimuthChangedListener azimuthListener, Context context) {
         mAzimuthListener = azimuthListener;
@@ -37,8 +38,12 @@ public class MyCurrentAzimuth implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
-    public void setOnShakeListener(OnAzimuthChangedListener listener) {
-        mAzimuthListener = listener;
+    public int getAccureny() {
+        return accureny;
+    }
+
+    private void setAccureny(int accureny) {
+        this.accureny = accureny;
     }
 
     @Override
@@ -49,12 +54,13 @@ public class MyCurrentAzimuth implements SensorEventListener {
         float[] rMat = new float[9];
         SensorManager.getRotationMatrixFromVector(rMat, event.values);
         azimuthTo = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
-
         mAzimuthListener.onAzimuthChanged(azimuthFrom, azimuthTo);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        setAccureny(accuracy);
     }
+
+
 }

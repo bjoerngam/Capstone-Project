@@ -1,18 +1,18 @@
 <RelativeLayout
-    android:id="@+id/rlMainScreen"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rlMainScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.android.stolpersteinear.MainScreenActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:background="@color/colorPrimaryDark"
-        android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:background="@color/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -22,9 +22,9 @@
 
         <ImageView
             android:id="@+id/logo"
-            android:layout_marginStart="@dimen/mainscreen_margin_start"
             android:layout_width="wrap_content"
             android:layout_height= "wrap_content"
+            android:layout_marginStart="@dimen/mainscreen_margin_start"
             android:contentDescription="@string/contentDescription_main_screen_app_name"
             android:src="@drawable/logo"/>
 
@@ -32,9 +32,9 @@
 
     <TextureView
             android:id="@+id/texture"
-            android:layout_below="@+id/toolbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
             android:contentDescription="@string/contentDescription_main_screen_texture"/>
 
     <ImageView
@@ -43,8 +43,16 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerInParent="true"
-            android:src="@drawable/stolpersteine_small"
             android:contentDescription="@string/contentDescription_main_screen_logo"
+        android:src="@drawable/stolpersteine_small"
             android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/tvDirection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="40dp"
+        android:visibility="invisible" />
 
 </RelativeLayout>

@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.example.android.stolpersteinear.data.StolperSteine;
-import com.example.android.stolpersteinear.utils.Adapter.DetailsAdapter;
+import com.example.android.stolpersteinear.utils.adapter.DetailsAdapter;
 
 import java.util.ArrayList;
 

@@ -517,7 +517,16 @@ public class MainScreenActivity extends AppCompatActivity
         myCurrentAzimuth = new MyCurrentAzimuth(this, this);
         myCurrentAzimuth.start();
         accuray = myCurrentAzimuth.getAccureny();
-        Log.i("MainScreen", Integer.toString(accuray));
+        if (accuray < 2) {
+            setCompassInformationDialog();
+        }
+    }
+
+    public void setCompassInformationDialog() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Compass Information Dialog").setMessage("Please calibrate your compass!");
+        AlertDialog alert = dialog.create();
+        alert.show();
     }
 
     /**
@@ -534,7 +543,7 @@ public class MainScreenActivity extends AppCompatActivity
         double phiAngle;
         double tanPhi;
 
-        Log.i("MainScrenn", "dx:" + Double.toString(dX) + " " + "dy:"
+        Log.i("MainScreen", "dx:" + Double.toString(dX) + " " + "dy:"
                 + Double.toString(dY) + " mPoi.getPoiLatitude:" + Double.toString(mPoi.getPoiLatitude())
                 + " mPoi.getPoiLongitude: " + Double.toString(mPoi.getPoiLongitude()) + " MyLatitude:"
                 + Double.toString(getLatitude()) + " MyLongitude:" + Double.toString(getLongitude()));
@@ -543,26 +552,33 @@ public class MainScreenActivity extends AppCompatActivity
         phiAngle = Math.atan(tanPhi);
         phiAngle = Math.toDegrees(phiAngle);
 
-        if (dX > 0 && dY > 0) {
-            // We are in the first quarter of the circle.
-            mTVPresent.setVisibility(View.VISIBLE);
-            mTVPresent.setText("1. Quarter" + " " + Integer.toString(accuray));
-            return phiAngle;
-        } else if (dX < 0 && dY > 0) {
-            mTVPresent.setVisibility(View.VISIBLE);
-            mTVPresent.setText("2. Quarter" + " " + Integer.toString(accuray));
-            // We are in the second quarter of the circle.
-            return HALF_CIRCLE - phiAngle;
-        } else if (dX < 0 && dY < 0) {
-            mTVPresent.setVisibility(View.VISIBLE);
-            mTVPresent.setText("3. Quarter" + " " + Integer.toString(accuray));
-            // We are in the third quarter of the circle.
-            return HALF_CIRCLE + phiAngle;
-        } else if (dX > 0 && dY < 0) {
-            mTVPresent.setVisibility(View.VISIBLE);
-            mTVPresent.setText("4. Quarter" + " " + Integer.toString(accuray));
-            // We are in the fourth quarter of the circle.
-            return FULL_CIRCLE - phiAngle;
+        try {
+
+            if (dX > 0 && dY > 0) {
+                // We are in the first quarter of the circle.
+                mTVPresent.setVisibility(View.VISIBLE);
+                mTVPresent.setText("1. Quarter" + " " + Integer.toString(accuray));
+                return phiAngle;
+            } else if (dX < 0 && dY > 0) {
+                mTVPresent.setVisibility(View.VISIBLE);
+                mTVPresent.setText("2. Quarter" + " " + Integer.toString(accuray));
+                // We are in the second quarter of the circle.
+                return HALF_CIRCLE - phiAngle;
+            } else if (dX < 0 && dY < 0) {
+                mTVPresent.setVisibility(View.VISIBLE);
+                mTVPresent.setText("3. Quarter" + " " + Integer.toString(accuray));
+                // We are in the third quarter of the circle.
+                return HALF_CIRCLE + phiAngle;
+            } else if (dX > 0 && dY < 0) {
+                mTVPresent.setVisibility(View.VISIBLE);
+                mTVPresent.setText("4. Quarter" + " " + Integer.toString(accuray));
+                // We are in the fourth quarter of the circle.
+                return FULL_CIRCLE - phiAngle;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(findViewById(android.R.id.content),
+                    "calculateTheoreticalAzimuth Error", Snackbar.LENGTH_LONG).show();
         }
 
         return phiAngle;
@@ -602,12 +618,18 @@ public class MainScreenActivity extends AppCompatActivity
      * @return true if I changed something and false if not.
      */
     private boolean isBetween(double minAngle, double maxAngle, double azimuth) {
-        if (minAngle > maxAngle) {
-            if (isBetween(0, maxAngle, azimuth) && isBetween(minAngle, FULL_CIRCLE, azimuth))
-                return true;
-        } else {
-            if (azimuth > minAngle && azimuth < maxAngle)
-                return true;
+        try {
+            if (minAngle > maxAngle) {
+                if (isBetween(0, maxAngle, azimuth) && isBetween(minAngle, FULL_CIRCLE, azimuth))
+                    return true;
+            } else {
+                if (azimuth > minAngle && azimuth < maxAngle)
+                    return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(findViewById(android.R.id.content),
+                    "isBetween Error", Snackbar.LENGTH_LONG).show();
         }
         return false;
     }
@@ -652,12 +674,18 @@ public class MainScreenActivity extends AppCompatActivity
         double minAngle = calculateAzimuthAccuracy(mAzimuthTheoretical).get(0);
         double maxAngle = calculateAzimuthAccuracy(mAzimuthTheoretical).get(1);
 
-        if (isBetween(minAngle, maxAngle, mAzimuthReal)) {
+        try {
+            if (isBetween(minAngle, maxAngle, mAzimuthReal)) {
+                mImageView.setVisibility(View.VISIBLE);
+                stolperSteinOnClickListener();
+            } else {
+                mImageView.setVisibility(View.INVISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(findViewById(android.R.id.content),
+                    "onAzimuthChanged Error", Snackbar.LENGTH_LONG).show();
             mImageView.setVisibility(View.VISIBLE);
-            stolperSteinOnClickListener();
-        } else {
-            // Devel version feature
-            mImageView.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -62,4 +62,6 @@
     <string name="error_gps_not_present">Bitte aktivieren Sie den GPS Empfänger</string>
     <string name="error_empty_list">Momentan ist die List leer. Bitte wählen Sie erst einer der drei Test GPS Positionen.</string>
     <string name="updatepreview_location">GPS Standort Update problem</string>
+    <string name="compass_information_title">Kompass Information</string>
+    <string name="compass_message">Bitte kalibrieren Sie den Kompass! Sie können dies in der Google Maps App tun.</string>
 </resources>

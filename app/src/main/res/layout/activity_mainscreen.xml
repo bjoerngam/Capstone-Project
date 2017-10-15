@@ -44,7 +44,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerInParent="true"
             android:contentDescription="@string/contentDescription_main_screen_logo"
-        android:src="@drawable/stolpersteine_small"
+        android:src="@drawable/stolpersteine"
             android:visibility="invisible" />
 
     <TextView

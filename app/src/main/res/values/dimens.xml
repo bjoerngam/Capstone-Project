@@ -38,12 +38,11 @@
     <dimen name="detail_view_victim_description">90dp</dimen>
     <dimen name="detail_view_victim_dates_margin_top">50dp</dimen>
     <dimen name="detail_view_victim_dates_death_margin_top">70dp</dimen>
-    <dimen name="detail_view_victim_address_margin_top">130dp</dimen>
+    <dimen name="detail_view_victim_address_margin_top">150dp</dimen>
     <dimen name="detail_view_headline_textSize">18sp</dimen>
     <dimen name="detail_view_image_margin_top">18dp</dimen>
     <dimen name="detail_view_store_dataset_margin_start">280dp</dimen>
-    <dimen name="detail_view_store_dataset_margin_top">190dp</dimen>
-
+    <dimen name="detail_view_store_dataset_margin_top">210dp</dimen>
     <!-- mainscreen activity -->
     <dimen name="mainscreen_margin_start">20dp</dimen>
 

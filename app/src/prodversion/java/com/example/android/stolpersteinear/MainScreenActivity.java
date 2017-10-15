@@ -420,6 +420,17 @@ public class MainScreenActivity extends AppCompatActivity
     private void setupListeners() {
         myCurrentAzimuth = new MyCurrentAzimuth(this, this);
         myCurrentAzimuth.start();
+        accuray = myCurrentAzimuth.getAccureny();
+        if (accuray < 2){
+            setCompassInformationDialog();
+        }
+    }
+
+    public void setCompassInformationDialog (){
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Compass Information Dialog").setMessage("Please calibrate your compass!");
+        AlertDialog alert = dialog.create();
+        alert.show();
     }
 
     private String getListOfVictimsNames() {

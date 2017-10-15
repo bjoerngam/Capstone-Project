@@ -25,6 +25,10 @@
     <string name="alertdailog_yes">Okay</string>
     <string name="alertdailog_no">Cancel</string>
     <string name="alertdailog_title">Remove local stored data</string>
+    <string name="compass_information_title">Compass Information Dialog</string>
+    <string name="compass_message">Please calibrate your compass! You can do this inside of the
+        Google Maps Apps.
+    </string>
 
     <!-- About Dialog -->
     <string name="about_dialog_title_first_slide">StolperSteineAR</string>
